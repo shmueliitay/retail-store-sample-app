@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: store-ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: store-ui
+  template:
+    metadata:
+      labels:
+        app: store-ui
+    spec:
+      containers:
+      - name: store-ui
+        image: itay80/smartshop:store-ui-latest
+        ports:
+        - containerPort: 3003
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: store-ui
+spec:
+  type: ClusterIP
+  selector:
+    app: store-ui
+  ports:
+  - port: 3003
+    targetPort: 3003

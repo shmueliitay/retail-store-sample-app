@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: store-chckout
+  namespace: store
+spec:
+  selector:
+    app: store-chckout
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3004
+  type: ClusterIP

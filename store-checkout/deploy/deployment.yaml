@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: store-checkout
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: store-checkout
+  template:
+    metadata:
+      labels:
+        app: store-checkout
+    spec:
+      containers:
+      - name: store-checkout
+        image: itay80/smartshop:store-checkout-latest
+        ports:
+        - containerPort: 3004
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: store-checkout
+spec:
+  type: ClusterIP
+  selector:
+    app: store-checkout
+  ports:
+  - port: 3004
+    targetPort: 3004

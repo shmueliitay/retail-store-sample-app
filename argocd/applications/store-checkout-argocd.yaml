@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: retail-store-checkout
+  namespace: argocd
+spec:
+  project: retail-store
+  source:
+    repoURL: 'https://github.com/shmueliitay/retail-store-sample-app.git'
+    targetRevision: main
+    path: store-checkout
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: retail-store
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

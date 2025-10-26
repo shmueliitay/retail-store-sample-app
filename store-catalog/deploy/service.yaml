@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: store-catalog
+  namespace: store
+spec:
+  selector:
+    app: store-catalog
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3002
+  type: ClusterIP
