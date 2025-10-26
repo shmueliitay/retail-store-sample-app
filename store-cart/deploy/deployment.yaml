@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: store-cart
-        image: itay80/store-cart:latest
+        image: itay80/smartshop:store-cart-latest
         ports:
         - containerPort: 3001
 ---
