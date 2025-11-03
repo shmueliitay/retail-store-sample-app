@@ -1,46 +1,32 @@
-# =============================================================================
-# SECURITY GROUPS AND RULES
-# =============================================================================
+resource "aws_security_group" "k8s" {
+  name        = "${local.resource_prefix}-k8s-sg"
+  description = "Security group for kubeadm cluster"
+  vpc_id      = aws_vpc.main.id
 
-# Allow HTTP/HTTPS traffic from internet to load balancer
-resource "aws_security_group_rule" "internet_to_lb_http" {
-  description       = "Allow HTTP traffic from internet to LoadBalancer"
-  type              = "ingress"
-  from_port         = 80
-  to_port           = 80
-  protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = module.retail_app_eks.cluster_security_group_id
+  ingress {
+    description = "SSH"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = [var.public_cidr]
+  }
+
+  ingress {
+    description = "Kubernetes API"
+    from_port   = 6443
+    to_port     = 6443
+    protocol    = "tcp"
+    cidr_blocks = [var.public_cidr]
+  }
+
+  egress {
+    description = "All outbound"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = merge(local.common_tags, { Name = "${local.resource_prefix}-k8s-sg" })
 }
 
-resource "aws_security_group_rule" "internet_to_lb_https" {
-  description       = "Allow HTTPS traffic from internet to LoadBalancer"
-  type              = "ingress"
-  from_port         = 443
-  to_port           = 443
-  protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = module.retail_app_eks.cluster_security_group_id
-}
-
-# Allow LoadBalancer health checks from AWS
-resource "aws_security_group_rule" "health_checks_to_lb" {
-  description       = "Allow AWS health checks to LoadBalancer"
-  type              = "ingress"
-  from_port         = 10254
-  to_port           = 10254
-  protocol          = "tcp"
-  cidr_blocks       = [module.vpc.vpc_cidr_block]
-  security_group_id = module.retail_app_eks.cluster_security_group_id
-}
-
-# Allow NodePort range for services (if needed)
-resource "aws_security_group_rule" "nodeport_access" {
-  description       = "Allow NodePort access within VPC"
-  type              = "ingress"
-  from_port         = 30000
-  to_port           = 32767
-  protocol          = "tcp"
-  cidr_blocks       = [module.vpc.vpc_cidr_block]
-  security_group_id = module.retail_app_eks.cluster_security_group_id
-}
