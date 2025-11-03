@@ -2,20 +2,23 @@ name: CI/CD Microservices
 
 on:
   push:
-    branches:
-      - main
-
-env:
-  AWS_REGION: eu-central-1
-  AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+    paths:
+      - 'src/**'
 
 jobs:
-  detect-and-build:
+  build:
     runs-on: ubuntu-latest
+    env:
+      AWS_REGION: eu-central-1
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Fetch full history so git diff works
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -27,43 +30,28 @@ jobs:
       - name: Login to ECR
         run: |
           aws ecr get-login-password --region $AWS_REGION | \
-          docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+            docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
 
-      - name: Detect changed services
+      - name: Detect changed microservices
         id: detect
         run: |
-          echo "Detecting changed services..."
-          # Get previous commit
-          PREV_COMMIT=$(git rev-parse HEAD~1 2>/dev/null || echo "")
-          # Current commit
-          CURR_COMMIT=$(git rev-parse HEAD)
-
-          if [ -z "$PREV_COMMIT" ]; then
-            echo "No previous commit found — initial build"
-            CHANGED="cart catalog checkout orders ui"
-          else
-            CHANGED=$(git diff --name-only $PREV_COMMIT $CURR_COMMIT \
-                      | grep -E '^src/(cart|catalog|checkout|orders|ui)/' \
-                      | cut -d/ -f2 \
-                      | sort -u \
-                      | tr '\n' ' ')
-          fi
-
-          if [ -z "$CHANGED" ]; then
-            echo "No changes detected. Skipping build."
-          else
-            echo "Changed microservices: $CHANGED"
-          fi
-
+          # If no previous commit, compare with empty tree
+          PREV_COMMIT=$(git rev-parse HEAD~1 2>/dev/null || echo "4b825dc642cb6eb9a060e54bf8d69288fbee4904")
+          echo "Previous commit: $PREV_COMMIT"
+          
+          CHANGED=$(git diff --name-only $PREV_COMMIT HEAD \
+            | grep -E '^src/(cart|catalog|checkout|orders|ui)/' \
+            | cut -d/ -f2 | sort -u | tr '\n' ' ')
+          
+          echo "Changed microservices: $CHANGED"
           echo "changed_services=$CHANGED" >> $GITHUB_OUTPUT
 
-      - name: Build and push Docker images
+      - name: Build & push changed microservices
         if: steps.detect.outputs.changed_services != ''
         run: |
           for service in ${{ steps.detect.outputs.changed_services }}; do
             echo "Building $service..."
-            IMAGE_NAME=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/retail-store-$service:$(git rev-parse --short HEAD)
-            docker build -t $IMAGE_NAME ./src/$service
-            docker push $IMAGE_NAME
+            docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION/retail-store-$service:$(git rev-parse --short HEAD) ./src/$service
+            docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION/retail-store-$service:$(git rev-parse --short HEAD)
           done
 
