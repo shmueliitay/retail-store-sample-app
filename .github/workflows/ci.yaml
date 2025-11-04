@@ -36,7 +36,7 @@ jobs:
           echo "changed_services=$CHANGED" >> $GITHUB_OUTPUT
           echo "Changed microservices: $CHANGED"
 
-      - name: Build and push Docker images # This section is updated
+      - name: Build and push Docker images
         if: steps.changes.outputs.changed_services != ''
         run: |
           for service in ${{ steps.changes.outputs.changed_services }}; do
