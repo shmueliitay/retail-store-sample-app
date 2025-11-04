@@ -45,17 +45,17 @@ jobs:
             
             echo "--- Processing Service: $service ---"
             
-            # 1. Build the image ONCE and tag it with the SHORT_SHA
+            
             echo "Building $service -> $REPO:$SHORT_SHA"
             docker build -t $REPO:$SHORT_SHA ./src/$service
             
-            # 2. Tag the SAME built image with 'latest'
+            
             echo "Tagging image as LATEST: $REPO:latest"
             docker tag $REPO:$SHORT_SHA $REPO:latest
             
-            # 3. Push SHORT_SHA tag
+            
             echo "Pushing SHA tag: $REPO:$SHORT_SHA"
-            # Fail the job if this push fails
+            
             docker push $REPO:$SHORT_SHA || exit 1 
             
             # 4. Push 'latest' tag
