@@ -36,32 +36,26 @@ jobs:
           echo "changed_services=$CHANGED" >> $GITHUB_OUTPUT
           echo "Changed microservices: $CHANGED"
 
-      - name: Build and push Docker images # This section is updated
+      - name: Build and push Docker images
         if: steps.changes.outputs.changed_services != ''
         run: |
           for service in ${{ steps.changes.outputs.changed_services }}; do
             REPO="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/retail-store-$service"
             SHORT_SHA=${GITHUB_SHA::8}
-            
-            echo "--- Processing Service: $service ---"
-            
-            # 1. Build the image ONCE and tag it with the SHORT_SHA
-            echo "Building $service -> $REPO:$SHORT_SHA"
+            echo "--- Processing $service ---"
+
             docker build -t $REPO:$SHORT_SHA ./src/$service
-            
-            # 2. Tag the SAME built image with 'latest'
-            echo "Tagging image as LATEST: $REPO:latest"
+            docker build -t $REPO:latest ./src/$service
+
             docker tag $REPO:$SHORT_SHA $REPO:latest
+            echo "Local image tags for the built image:"
+            docker images --filter reference="$REPO"
             
-            # 3. Push SHORT_SHA tag
+            
             echo "Pushing SHA tag: $REPO:$SHORT_SHA"
-            # Fail the job if this push fails
-            docker push $REPO:$SHORT_SHA || exit 1 
-            
-            # 4. Push 'latest' tag
-            echo "Pushing LATEST tag: $REPO:latest"
-            # Fail the job if this critical push fails
-            docker push $REPO:latest || exit 1 
-            
-            echo "Successfully pushed both $SHORT_SHA and latest tags for $service."
+            docker push $REPO:$SHORT_SHA
+      
+      
+            echo "Pushing latest tag: $REPO:latest"
+            docker push $REPO:latest
           done
