@@ -1,18 +1,12 @@
-{{- if .Values.podDisruptionBudget.enabled }}
+{{- if .Values.pdb.enabled }}
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
-  name: {{ include "catalog.fullname" . }}
-  labels:
-    {{- include "catalog.labels" . | nindent 4 }}
+  name: {{ include "retail-store-catalog.fullname" . }}-pdb
 spec:
-  {{- if .Values.podDisruptionBudget.minAvailable }}
-  minAvailable: {{ .Values.podDisruptionBudget.minAvailable }} 
-  {{- end }}
-  {{- if .Values.podDisruptionBudget.maxUnavailable }}
-  maxUnavailable: {{ .Values.podDisruptionBudget.maxUnavailable }}
-  {{- end }}
+  minAvailable: {{ .Values.pdb.minAvailable }}
   selector:
     matchLabels:
-      {{- include "catalog.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/name: {{ include "retail-store-catalog.name" . }}
 {{- end }}
+

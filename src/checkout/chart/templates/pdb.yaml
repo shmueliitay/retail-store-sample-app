@@ -1,18 +1,12 @@
-{{- if .Values.podDisruptionBudget.enabled }}
+{{- if .Values.pdb.enabled }}
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
-  name: {{ include "checkout.fullname" . }}
-  labels:
-    {{- include "checkout.labels" . | nindent 4 }}
+  name: {{ include "retail-store-checkout.fullname" . }}-pdb
 spec:
-  {{- if .Values.podDisruptionBudget.minAvailable }}
-  minAvailable: {{ .Values.podDisruptionBudget.minAvailable }} 
-  {{- end }}
-  {{- if .Values.podDisruptionBudget.maxUnavailable }}
-  maxUnavailable: {{ .Values.podDisruptionBudget.maxUnavailable }}
-  {{- end }}
+  minAvailable: {{ .Values.pdb.minAvailable }}
   selector:
     matchLabels:
-      {{- include "checkout.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/name: {{ include "retail-store-checkout.name" . }}
 {{- end }}
+
