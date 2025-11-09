@@ -35,7 +35,7 @@ env:
   - name: DYNAMODB_ENDPOINT
     value: "http://dynamodb-local.retail-store.svc.cluster.local:8000"
   - name: AWS_REGION
-    value: "us-east-1"
+    value: "us-central-1"
 
   # Optional app configs
   - name: CACHE_TTL
