@@ -8,6 +8,8 @@ image:
   repository: "922581758696.dkr.ecr.eu-central-1.amazonaws.com/retail-store-catalog"
   tag: "latest"
   pullPolicy: IfNotPresent
+imagePullSecrets:
+  - name: ecr-registry
 
 service:
   type: ClusterIP
