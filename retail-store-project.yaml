@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"argoproj.io/v1alpha1","kind":"AppProject","metadata":{"annotations":{},"name":"retail-store-project","namespace":"argocd"},"spec":{"clusterResourceWhitelist":[{"group":"*","kind":"*"}],"description":"Project for retail store microservices apps","destinations":[{"namespace":"retail-store","server":"https://kubernetes.default.svc"}],"sourceRepos":["https://github.com/shmueliitay/retail-store-sample-app.git"]}}
+  creationTimestamp: "2025-10-28T18:10:36Z"
+  generation: 1
+  name: retail-store-project
+  namespace: argocd
+  resourceVersion: "144894"
+  uid: c3ca0656-5663-4e44-a616-f5fba7d5d010
+spec:
+  clusterResourceWhitelist:
+  - group: '*'
+    kind: '*'
+  description: Project for retail store microservices apps
+  destinations:
+  - namespace: retail-store
+    server: https://kubernetes.default.svc
+  - namespace: argocd
+    server: https://kubernetes.default.svc
+  sourceRepos:
+  - https://github.com/shmueliitay/retail-store-sample-app.git
