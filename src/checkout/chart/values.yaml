@@ -1,62 +1,37 @@
-serviceAccount:
-  create: true
-  name: ""
-
-replicaCount: 1
-
+replicaCount: 2
 image:
-  repository: "922581758696.dkr.ecr.eu-central-1.amazonaws.com/retail-store-checkout"
-  tag: "latest"
-  pullPolicy: IfNotPresent
+repository: "922581758696.dkr.ecr.eu-central-1.amazonaws.com/retail-store-checkout"
+tag: latest
+pullPolicy: IfNotPresent
 
-imagePullSecrets:
-  - name: ecr-registry
 
 service:
-  type: ClusterIP
-  port: 8080
+port: 8080
+
 
 resources:
-  limits:
-    cpu: "100m"
-    memory: "256Mi"
-  requests:
-    cpu: "100m"
-    memory: "256Mi"
+requests:
+cpu: 100m
+memory: 256Mi
+limits:
+cpu: 200m
+memory: 512Mi
+
 
 env:
-  - name: SPRING_PROFILES_ACTIVE
-    value: "prod"
-
-  # RabbitMQ configuration
   - name: RABBITMQ_HOST
-    value: "rabbitmq.retail-store.svc.cluster.local"
+    value: "retail-rabbitmq"
   - name: RABBITMQ_PORT
     value: "5672"
   - name: RABBITMQ_USER
-    value: "checkout"
+    value: "guest"
   - name: RABBITMQ_PASSWORD
-    value: "checkoutpass"
+    value: "rabbitpass"
 
-  # Optional app configs
-  - name: LOG_LEVEL
-    value: "INFO"
 
 healthCheck:
-  path: /health
-  initialDelaySeconds: 10
-  periodSeconds: 10
-  timeoutSeconds: 2
-  failureThreshold: 3
-
-hpa:
-  enabled: true
-  minReplicas: 1
-  maxReplicas: 3
-  targetCPUUtilizationPercentage: 70
-  targetMemoryUtilizationPercentage: 80
-
-pdb:
-  enabled: true
-  minAvailable: 1
-
+path: /health
+initialDelaySeconds: 5
+periodSeconds: 10
+timeoutSeconds: 2
+failureThreshold: 3
