@@ -3,12 +3,16 @@ kind: Service
 metadata:
   name: {{ include "retail-store-cart.fullname" . }}
   labels:
-    app.kubernetes.io/name: {{ include "retail-store-cart.name" . }}
+    {{- include "retail-store-cart.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.service.port }}
       targetPort: {{ .Values.service.port }}
+      {{- if eq .Values.service.type "NodePort" }}
+      nodePort: {{ .Values.service.nodePort }}
+      {{- end }}
   selector:
     app.kubernetes.io/name: {{ include "retail-store-cart.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
 

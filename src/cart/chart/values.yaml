@@ -4,10 +4,13 @@ image:
   repository: "922581758696.dkr.ecr.eu-central-1.amazonaws.com/retail-store-cart"
   tag: latest
   pullPolicy: IfNotPresent
+imagePullSecrets:
+  - name: ecr-regcred
 
 service:
-  type: ClusterIP
+  type: NodePort
   port: 8080
+  nodePort: 30080
 
 resources:
   requests:
@@ -26,7 +29,7 @@ env:
     value: "http://dynamodb-local:8000"
 
 healthCheck:
-  path: /health
+  path: /actuator/health
   initialDelaySeconds: 5
   periodSeconds: 10
   timeoutSeconds: 2

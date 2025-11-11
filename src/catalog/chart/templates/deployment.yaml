@@ -1,25 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "retail-store-catalog.fullname" . }}
+  name: {{ include "catalog.fullname" . }}
   labels:
-    app.kubernetes.io/name: {{ include "retail-store-catalog.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/version: {{ .Chart.AppVersion }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    {{- include "catalog.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "retail-store-catalog.name" . }}
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      {{- include "catalog.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ include "retail-store-catalog.name" . }}
-        app.kubernetes.io/instance: {{ .Release.Name }}
+        {{- include "catalog.selectorLabels" . | nindent 8 }}
     spec:
-      serviceAccountName: {{ include "retail-store-catalog.serviceAccountName" . }}
+      serviceAccountName: {{ include "catalog.serviceAccountName" . }}
       containers:
         - name: catalog
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

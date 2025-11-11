@@ -1,14 +1,15 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "retail-store-catalog.fullname" . }}
+  name: {{ include "catalog.fullname" . }}
   labels:
-    app.kubernetes.io/name: {{ include "retail-store-catalog.name" . }}
+    {{- include "catalog.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.service.port }}
       targetPort: {{ .Values.service.port }}
+      nodePort: {{ .Values.service.nodePort }}
   selector:
-    app.kubernetes.io/name: {{ include "retail-store-catalog.name" . }}
+    {{- include "catalog.selectorLabels" . | nindent 4 }}
 

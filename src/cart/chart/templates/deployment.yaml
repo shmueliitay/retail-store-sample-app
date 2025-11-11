@@ -20,6 +20,15 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       serviceAccountName: {{ include "retail-store-cart.serviceAccountName" . }}
+
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- range .Values.imagePullSecrets }}
+        - name: {{ .name }}
+        {{- end }}
+      {{- end }}
+
+
       containers:
         - name: cart
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
