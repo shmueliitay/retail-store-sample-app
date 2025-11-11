@@ -3,13 +3,17 @@ kind: Pod
 metadata:
   name: "{{ include "retail-store-cart.fullname" . }}-test-connection"
   labels:
-    {{- include "carts.labels" . | nindent 4 }}
+    {{- include "retail-store-cart.labels" . | nindent 4 }}
   annotations:
     "helm.sh/hook": test-success
 spec:
   containers:
     - name: wget
       image: busybox
-      command: ['wget']
-      args: ['{{ include "carts.fullname" . }}:{{ .Values.service.port }}/actuator/health/liveness']
+      command: ['sh', '-c']
+      args:
+        - >
+          wget --spider {{ include "retail-store-cart.fullname" . }}:{{ .Values.service.port }}/actuator/health/liveness -T 5;
+          exit $?
   restartPolicy: Never
+

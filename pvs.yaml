@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-retail-postgresql
+spec:
+  capacity:
+    storage: 8Gi
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-path
+  hostPath:
+    path: /mnt/data/postgresql
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-retail-rabbitmq
+spec:
+  capacity:
+    storage: 8Gi
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-path
+  hostPath:
+    path: /mnt/data/rabbitmq
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-redis-master
+spec:
+  capacity:
+    storage: 8Gi
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-path
+  hostPath:
+    path: /mnt/data/redis-master
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-redis-replicas
+spec:
+  capacity:
+    storage: 8Gi
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-path
+  hostPath:
+    path: /mnt/data/redis-replicas
+
