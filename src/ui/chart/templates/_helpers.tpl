@@ -1,87 +1,51 @@
-{{/* vim: set filetype=mustache: */}}
 {{/*
-Expand the name of the chart.
+Return the chart name
 */}}
-{{- define "ui.name" -}}
-{{- default "ui" .Values.nameOverride | trunc 63 | trimSuffix "-" }}
-{{- end }}
+{{- define "retail-store-ui.name" -}}
+{{- .Chart.Name -}}
+{{- end -}}
 
 {{/*
-Create a default fully qualified app name.
-We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
-If release name contains chart name it will be used as a full name.
+Return the release name
 */}}
-{{- define "ui.fullname" -}}
-{{- if .Values.fullnameOverride }}
-{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
-{{- else }}
-{{- $name := default "ui" .Values.nameOverride }}
-{{- if contains $name .Release.Name }}
-{{- .Release.Name | trunc 63 | trimSuffix "-" }}
-{{- else }}
-{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
-{{- end }}
-{{- end }}
-{{- end }}
+{{- define "retail-store-ui.release" -}}
+{{- .Release.Name -}}
+{{- end -}}
 
 {{/*
-Create chart name and version as used by the chart label.
+Return the fully qualified app name
 */}}
-{{- define "ui.chart" -}}
-{{- printf "%s-%s" "ui" .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
-{{- end }}
+{{- define "retail-store-ui.fullname" -}}
+{{- printf "%s-%s" .Release.Name .Chart.Name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Return the ServiceAccount name
+*/}}
+{{- define "retail-store-ui.serviceAccountName" -}}
+{{- printf "%s-sa" (include "retail-store-ui.fullname" .) -}}
+{{- end -}}
 
 {{/*
 Common labels
 */}}
-{{- define "ui.labels" -}}
-helm.sh/chart: {{ include "ui.chart" . }}
-{{ include "ui.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{- end }}
-
-{{/*
-Selector labels
-*/}}
-{{- define "ui.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "ui.name" . }}
+{{- define "retail-store-ui.labels" -}}
+app.kubernetes.io/name: {{ include "retail-store-ui.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
-app.kubernetes.io/component: service
-app.kubernetes.io/owner: retail-store-sample
-{{- end }}
-
-{{/*
-Create the name of the service account to use
-*/}}
-{{- define "ui.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create }}
-{{- default (include "ui.fullname" .) .Values.serviceAccount.name }}
-{{- else }}
-{{- default "default" .Values.serviceAccount.name }}
-{{- end }}
-{{- end }}
-
-{{/*
-Create the name of the config map to use
-*/}}
-{{- define "ui.configMapName" -}}
-{{- if .Values.configMap.create }}
-{{- default (include "ui.fullname" .) .Values.configMap.name }}
-{{- else }}
-{{- default "default" .Values.configMap.name }}
-{{- end }}
-{{- end }}
-
-
-{{/* podAnnotations */}}
-{{- define "ui.podAnnotations" -}}
-{{- if or .Values.metrics.enabled .Values.podAnnotations }}
-{{- $podAnnotations := .Values.podAnnotations}}
-{{- $metricsAnnotations := .Values.metrics.podAnnotations}}
-{{- $allAnnotations := merge $podAnnotations $metricsAnnotations }}
-{{- toYaml $allAnnotations }}
-{{- end }}
+app.kubernetes.io/version: {{ .Chart.AppVersion }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end -}}
+
+{{/* Aliases for old templates using store-ui.* */}}
+{{- define "store-ui.fullname" -}}
+{{- include "retail-store-ui.fullname" . -}}
+{{- end -}}
+
+{{- define "store-ui.serviceAccountName" -}}
+{{- include "retail-store-ui.serviceAccountName" . -}}
+{{- end -}}
+
+{{- define "store-ui.labels" -}}
+{{- include "retail-store-ui.labels" . -}}
+{{- end -}}
+
