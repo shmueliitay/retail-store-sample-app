@@ -1,0 +1,47 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: retail-store-ingress
+  namespace: retail-store
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: retail-store.local
+      http:
+        paths:
+          - path: /ui
+            pathType: Prefix
+            backend:
+              service:
+                name: store-ui-retail-store-sample-ui-chart
+                port:
+                  number: 8080
+          - path: /catalog
+            pathType: Prefix
+            backend:
+              service:
+                name: store-catalog
+                port:
+                  number: 8080
+          - path: /cart
+            pathType: Prefix
+            backend:
+              service:
+                name: store-cart-retail-store-cart
+                port:
+                  number: 8080
+          - path: /orders
+            pathType: Prefix
+            backend:
+              service:
+                name: store-orders
+                port:
+                  number: 8080
+          - path: /checkout
+            pathType: Prefix
+            backend:
+              service:
+                name: checkout
+                port:
+                  number: 8080
+
