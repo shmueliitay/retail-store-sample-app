@@ -2,11 +2,11 @@
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
-  name: {{ include "retail-store-checkout.fullname" . }}-pdb
+  name: {{ include "checkout.fullname" . }}-pdb
 spec:
   minAvailable: {{ .Values.pdb.minAvailable }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "retail-store-checkout.name" . }}
+      app.kubernetes.io/name: {{ include "checkout.name" . }}
 {{- end }}
 

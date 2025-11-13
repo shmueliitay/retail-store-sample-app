@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "retail-store-checkout.fullname" . }}
+  name: {{ include "checkout.fullname" . }}
   labels:
-    app.kubernetes.io/name: {{ include "retail-store-checkout.name" . }}
+    app.kubernetes.io/name: {{ include "checkout.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/version: {{ .Chart.AppVersion }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
@@ -11,15 +11,19 @@ spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "retail-store-checkout.name" . }}
+      app.kubernetes.io/name: {{ include "checkout.name" . }}
       app.kubernetes.io/instance: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ include "retail-store-checkout.name" . }}
+        app.kubernetes.io/name: {{ include "checkout.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
-      serviceAccountName: {{ include "retail-store-checkout.serviceAccountName" . }}
+      serviceAccountName: {{ include "checkout.serviceAccountName" . }}
+      imagePullSecrets:
+        {{- range .Values.image.pullSecrets }}
+        - name: {{ .name }}
+        {{- end }}
       containers:
         - name: checkout
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -45,8 +49,8 @@ spec:
             httpGet:
               path: {{ .Values.healthCheck.path }}
               port: {{ .Values.service.port }}
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            timeoutSeconds: 2
-            failureThreshold: 3
+            initialDelaySeconds: {{ .Values.healthCheck.initialDelaySeconds }}
+            periodSeconds: {{ .Values.healthCheck.periodSeconds }}
+            timeoutSeconds: {{ .Values.healthCheck.timeoutSeconds }}
+            failureThreshold: {{ .Values.healthCheck.failureThreshold }}
 

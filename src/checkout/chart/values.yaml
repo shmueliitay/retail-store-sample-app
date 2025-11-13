@@ -1,22 +1,24 @@
-replicaCount: 2
-image:
-repository: "922581758696.dkr.ecr.eu-central-1.amazonaws.com/retail-store-checkout"
-tag: latest
-pullPolicy: IfNotPresent
+replicaCount: 1
 
+image:
+  repository: "922581758696.dkr.ecr.eu-central-1.amazonaws.com/retail-store-checkout"
+  tag: latest
+  pullPolicy: IfNotPresent
+  pullSecrets:
+    - name: ecr-secret
 
 service:
-port: 8080
-
+  type: ClusterIP
+  port: 8080
+  type: ClusterIP
 
 resources:
-requests:
-cpu: 100m
-memory: 256Mi
-limits:
-cpu: 200m
-memory: 512Mi
-
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 200m
+    memory: 512Mi
 
 env:
   - name: RABBITMQ_HOST
@@ -25,13 +27,45 @@ env:
     value: "5672"
   - name: RABBITMQ_USER
     value: "guest"
-  - name: RABBITMQ_PASSWORD
+  - name: RABBITMQ_PASSWORD"
     value: "rabbitpass"
 
-
 healthCheck:
-path: /health
-initialDelaySeconds: 5
-periodSeconds: 10
-timeoutSeconds: 2
-failureThreshold: 3
+  path: /health
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 2
+  failureThreshold: 3
+
+  create: true
+  name: ""
+
+securityGroups:
+  create: false
+  name: ""
+
+redis:
+  create: false
+  name: ""
+
+pdb:
+  enabled: false
+
+hpa:
+  enabled: false
+
+serviceAccount:
+  create: true
+  name: ""
+
+securityGroups:
+  create: false
+  name: ""
+
+redis:
+  create: false
+  name: ""
+
+configMap:
+  create: false
+  name: ""
