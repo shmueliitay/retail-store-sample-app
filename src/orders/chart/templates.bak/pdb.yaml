@@ -2,11 +2,11 @@
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
-  name: {{ include "catalog.fullname" . }}-pdb
+  name: {{ include "retail-store-orders.fullname" . }}-pdb
 spec:
   minAvailable: {{ .Values.pdb.minAvailable }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "catalog.name" . }}
+      app.kubernetes.io/name: {{ include "retail-store-orders.name" . }}
 {{- end }}
 

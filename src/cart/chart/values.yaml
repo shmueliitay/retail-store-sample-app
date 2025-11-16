@@ -1,11 +1,11 @@
-replicaCount: 2
+replicaCount: 1
 
 image:
   repository: "922581758696.dkr.ecr.eu-central-1.amazonaws.com/retail-store-cart"
   tag: latest
   pullPolicy: IfNotPresent
 imagePullSecrets:
-  - name: ecr-regcred
+  - name: ecr-secret
 
 service:
   type: NodePort

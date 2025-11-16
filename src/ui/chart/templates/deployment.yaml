@@ -3,7 +3,8 @@ kind: Deployment
 metadata:
   name: {{ include "store-ui.fullname" . }}
   labels:
-    {{- include "store-ui.labels" . | nindent 4 }}
+    app.kubernetes.io/name: {{ include "store-ui.fullname" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
@@ -13,8 +14,13 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/name: {{ include "store-ui.fullname" . }}
     spec:
       serviceAccountName: {{ include "store-ui.serviceAccountName" . }}
+      imagePullSecrets:
+        {{- range .Values.imagePullSecrets }}
+        - name: {{ .name }}
+        {{- end }}
       containers:
         - name: store-ui
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -26,6 +32,11 @@ spec:
             - name: {{ .name }}
               value: {{ .value | quote }}
             {{- end }}
+          {{- if .Values.persistence.enabled }}
+          volumeMounts:
+            - name: store-ui-data
+              mountPath: {{ .Values.persistence.mountPath }}
+          {{- end }}
           readinessProbe:
             httpGet:
               path: {{ .Values.healthCheck.path }}
@@ -42,4 +53,11 @@ spec:
             periodSeconds: {{ .Values.healthCheck.periodSeconds }}
             timeoutSeconds: {{ .Values.healthCheck.timeoutSeconds }}
             failureThreshold: {{ .Values.healthCheck.failureThreshold }}
+
+      {{- if .Values.persistence.enabled }}
+      volumes:
+        - name: store-ui-data
+          persistentVolumeClaim:
+            claimName: store-ui-pvc
+      {{- end }}
 

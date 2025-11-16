@@ -1,4 +1,4 @@
-replicaCount: 2
+replicaCount: 1
 
 image:
   repository: "922581758696.dkr.ecr.eu-central-1.amazonaws.com/retail-store-catalog"
@@ -48,4 +48,29 @@ app:
     secret:
       create: false
       name: ""
+
+podDisruptionBudget:
+  enabled: false
+  minAvailable: 1
+  maxUnavailable: 1
+
+pdb:
+  enabled: false
+  minAvailable: 1
+  maxUnavailable: 1
+
+mysql:
+  create: false
+
+autoscaling:
+  enabled: false
+
+hpa:
+  enabled: false
+
+metrics:
+  enabled: false
+
+configMap:
+  create: false
 

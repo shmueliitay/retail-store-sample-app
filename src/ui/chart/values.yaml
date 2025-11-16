@@ -8,7 +8,7 @@ image:
 service:
   type: NodePort
   port: 8080
-  nodePort: 30085
+  nodePort: 30087
 
 resources:
   requests:
@@ -21,8 +21,8 @@ resources:
 env: []
 
 healthCheck:
-  path: /health
-  initialDelaySeconds: 5
+  path: /actuator/health
+  initialDelaySeconds: 40
   periodSeconds: 10
   timeoutSeconds: 2
   failureThreshold: 3
@@ -87,4 +87,10 @@ imagePullSecrets:
 
 
 nameOverride: store-ui
+
+persistence:
+  enabled: false
+  mountPath: /data
+  size: 1Gi
+  storageClassName: local-path
 

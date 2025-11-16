@@ -43,3 +43,10 @@ default
 {{- end }}
 {{- end }}
 
+{{/*
+Return the name of the ConfigMap for the catalog app
+*/}}
+{{- define "catalog.configMapName" -}}
+{{ include "catalog.fullname" . }}-config
+{{- end -}}
+

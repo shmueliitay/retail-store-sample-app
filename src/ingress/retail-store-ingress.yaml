@@ -3,19 +3,24 @@ kind: Ingress
 metadata:
   name: retail-store-ingress
   namespace: retail-store
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
 spec:
   ingressClassName: nginx
   rules:
     - host: retail-store.local
       http:
         paths:
-          - path: /ui
+          # UI frontend at root
+          - path: /
             pathType: Prefix
             backend:
               service:
                 name: store-ui-retail-store-sample-ui-chart
                 port:
                   number: 8080
+
+          # Catalog API
           - path: /catalog
             pathType: Prefix
             backend:
@@ -23,6 +28,8 @@ spec:
                 name: store-catalog
                 port:
                   number: 8080
+
+          # Cart API
           - path: /cart
             pathType: Prefix
             backend:
@@ -30,6 +37,8 @@ spec:
                 name: store-cart-retail-store-cart
                 port:
                   number: 8080
+
+          # Orders API
           - path: /orders
             pathType: Prefix
             backend:
@@ -37,6 +46,8 @@ spec:
                 name: store-orders
                 port:
                   number: 8080
+
+          # Checkout API
           - path: /checkout
             pathType: Prefix
             backend:
