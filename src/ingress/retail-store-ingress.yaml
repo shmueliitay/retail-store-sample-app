@@ -5,6 +5,8 @@ metadata:
   namespace: retail-store
   annotations:
     kubernetes.io/ingress.class: "nginx"
+    # Rewrite paths to match the internal app endpoints
+    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   ingressClassName: nginx
   rules:
@@ -20,7 +22,7 @@ spec:
                 port:
                   number: 8080
 
-          # Catalog API
+          # Catalog API (rewrite /catalog/* → internal /products)
           - path: /catalog
             pathType: Prefix
             backend:
@@ -29,7 +31,7 @@ spec:
                 port:
                   number: 8080
 
-          # Cart API
+          # Cart API (rewrite /cart/* → internal /carts/123)
           - path: /cart
             pathType: Prefix
             backend:
@@ -38,7 +40,7 @@ spec:
                 port:
                   number: 8080
 
-          # Orders API
+          # Orders API (rewrite /orders/* → internal /orders)
           - path: /orders
             pathType: Prefix
             backend:
@@ -47,7 +49,7 @@ spec:
                 port:
                   number: 8080
 
-          # Checkout API
+          # Checkout API (rewrite /checkout/* → internal /checkout)
           - path: /checkout
             pathType: Prefix
             backend:
