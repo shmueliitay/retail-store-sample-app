@@ -5,57 +5,49 @@ metadata:
   namespace: retail-store
   annotations:
     kubernetes.io/ingress.class: "nginx"
-    nginx.ingress.kubernetes.io/use-regex: "true"
-    # rewrite cart path so UI can hit /carts/123/items
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
   ingressClassName: nginx
   rules:
-    - host: retail-store.local
-      http:
-        paths:
-          # UI frontend at root
-          - path: /(.*)
-            pathType: ImplementationSpecific
-            backend:
-              service:
-                name: store-ui-retail-store-sample-ui-chart
-                port:
-                  number: 8080
+  - host: retail-store.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: store-ui-retail-store-sample-ui-chart
+            port:
+              number: 8080
 
-          # Catalog API
-          - path: /catalog/(.*)
-            pathType: ImplementationSpecific
-            backend:
-              service:
-                name: store-catalog
-                port:
-                  number: 8080
+      - path: /catalog
+        pathType: Prefix
+        backend:
+          service:
+            name: store-catalog
+            port:
+              number: 8080
 
-          # Cart API
-          - path: /cart/(.*)
-            pathType: ImplementationSpecific
-            backend:
-              service:
-                name: store-cart-retail-store-cart
-                port:
-                  number: 8080
+      - path: /cart
+        pathType: Prefix
+        backend:
+          service:
+            name: store-cart-retail-store-cart
+            port:
+              number: 8080
 
-          # Orders API
-          - path: /orders/(.*)
-            pathType: ImplementationSpecific
-            backend:
-              service:
-                name: store-orders
-                port:
-                  number: 8080
+      - path: /orders
+        pathType: Prefix
+        backend:
+          service:
+            name: store-orders
+            port:
+              number: 8080
 
-          # Checkout API
-          - path: /checkout/(.*)
-            pathType: ImplementationSpecific
-            backend:
-              service:
-                name: checkout
-                port:
-                  number: 8080
+      - path: /checkout
+        pathType: Prefix
+        backend:
+          service:
+            name: checkout
+            port:
+              number: 8080
 
