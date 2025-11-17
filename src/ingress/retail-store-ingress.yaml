@@ -5,8 +5,9 @@ metadata:
   namespace: retail-store
   annotations:
     kubernetes.io/ingress.class: "nginx"
-    # Rewrite paths to match the internal app endpoints
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    # rewrite cart path so UI can hit /carts/123/items
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
   ingressClassName: nginx
   rules:
@@ -14,44 +15,44 @@ spec:
       http:
         paths:
           # UI frontend at root
-          - path: /
-            pathType: Prefix
+          - path: /(.*)
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: store-ui-retail-store-sample-ui-chart
                 port:
                   number: 8080
 
-          # Catalog API (rewrite /catalog/* → internal /products)
-          - path: /catalog
-            pathType: Prefix
+          # Catalog API
+          - path: /catalog/(.*)
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: store-catalog
                 port:
                   number: 8080
 
-          # Cart API (rewrite /cart/* → internal /carts/123)
-          - path: /cart
-            pathType: Prefix
+          # Cart API
+          - path: /cart/(.*)
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: store-cart-retail-store-cart
                 port:
                   number: 8080
 
-          # Orders API (rewrite /orders/* → internal /orders)
-          - path: /orders
-            pathType: Prefix
+          # Orders API
+          - path: /orders/(.*)
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: store-orders
                 port:
                   number: 8080
 
-          # Checkout API (rewrite /checkout/* → internal /checkout)
-          - path: /checkout
-            pathType: Prefix
+          # Checkout API
+          - path: /checkout/(.*)
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: checkout
