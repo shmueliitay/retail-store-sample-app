@@ -18,11 +18,7 @@ resources:
     cpu: 500m
     memory: 1Gi
 
-env: 
-  - name: CATALOG_API_BASE
-    value: "http://store-catalog:8080"
-  - name: CART_API_BASE
-    value: "http://store-cart:8080"
+env: []
 
 healthCheck:
   path: /actuator/health
