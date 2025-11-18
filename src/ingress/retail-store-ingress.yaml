@@ -6,13 +6,15 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2 
 spec:
   ingressClassName: nginx
   rules:
   - host: retail-store.local
     http:
       paths:
-      # Catalog
+      
+      # 1. CATALOG: Strips /catalog. Code is fixed.
       - path: /catalog(/|$)(.*)
         pathType: ImplementationSpecific
         backend:
@@ -20,36 +22,41 @@ spec:
             name: store-catalog
             port:
               number: 8080
-      # Cart
-      - path: /cart(/.*)?
+              
+      # 2. CART: Strips /cart. (Needs code fix)
+      - path: /cart(/|$)(.*)
         pathType: ImplementationSpecific
         backend:
           service:
             name: store-cart-retail-store-cart
             port:
               number: 8080
-      # Orders
-      - path: /orders(/.*)?
+              
+      # 3. ORDERS: Strips /orders
+      - path: /orders(/|$)(.*)
         pathType: ImplementationSpecific
         backend:
           service:
             name: store-orders
             port:
               number: 8080
-      # Checkout
-      - path: /checkout(/.*)?
+              
+      # 4. CHECKOUT: Strips /checkout
+      - path: /checkout(/|$)(.*)
         pathType: ImplementationSpecific
         backend:
           service:
             name: checkout
             port:
               number: 8080
-      # SPA fallback
-      - path: /(.*)
+              
+      # 5. UI/SPA FALLBACK FIX: Uses /()(.*) pattern. 
+      # The first () is $1 (empty string). The second (.*) is $2 (the full path).
+      # The global rewrite /$$2 sends the path intact to the UI service.
+      - path: /()(.*)
         pathType: ImplementationSpecific
         backend:
           service:
             name: store-ui-retail-store-sample-ui-chart
             port:
               number: 8080
-
