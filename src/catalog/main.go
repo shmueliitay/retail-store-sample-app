@@ -113,7 +113,6 @@ func main() {
         r.GET("/products/:id", c.GetProduct)
         // --- END CORRECTION ---
 
-        r.GET("/health", func(c *gin.Context) {
 
 	r.GET("/health", func(c *gin.Context) {
 		if !chaosController.IsHealthy() {
