@@ -105,13 +105,13 @@ func main() {
 	r.Use(chaosController.ChaosMiddleware())
         r.Use(otelgin.Middleware("catalog-server"))
 
-        // Define routes using the stripped paths (e.g., /products instead of /catalog/products)
-        r.GET("/products", c.GetProducts)
-
-        r.GET("/size", c.CatalogSize)
-        r.GET("/tags", c.ListTags)
-        r.GET("/products/:id", c.GetProduct)
-        // --- END CORRECTION ---
+        catalog := r.Group("/catalog")
+        {
+            catalog.GET("/products", c.GetProducts)
+            catalog.GET("/size", c.CatalogSize)
+            catalog.GET("/tags", c.ListTags)
+            catalog.GET("/products/:id", c.GetProduct)
+        }
 
 
 	r.GET("/health", func(c *gin.Context) {

@@ -7,6 +7,7 @@ metadata:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/use-regex: "true"
     # CRITICAL GLOBAL REWRITE
+    # This targets the remainder of the path after the prefix is matched.
     nginx.ingress.kubernetes.io/rewrite-target: /$2 
 spec:
   ingressClassName: nginx
@@ -15,47 +16,48 @@ spec:
     http:
       paths:
       
-      # 1. CATALOG: Using a non-capturing group to ensure /$2 is reliable.
-      - path: /catalog(?:/|$)(.*)
-        pathType: ImplementationSpecific
+      # 1. UI FALLBACK (Must be last): Matches the root path.
+      # The UI code handles subsequent paths correctly.
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: store-ui-retail-store-sample-ui-chart
+            port:
+              number: 8080
+
+      # 2. CATALOG API: Matches /catalog or /catalog/
+      - path: /catalog
+        pathType: Prefix
         backend:
           service:
             name: store-catalog
             port:
               number: 8080
               
-      # 2. CART: Using a non-capturing group.
-      - path: /cart(?:/|$)(.*)
-        pathType: ImplementationSpecific
+      # 3. CART API: Matches /cart or /cart/
+      - path: /cart
+        pathType: Prefix
         backend:
           service:
             name: store-cart-retail-store-cart
             port:
               number: 8080
               
-      # 3. ORDERS
-      - path: /orders(?:/|$)(.*)
-        pathType: ImplementationSpecific
+      # 4. ORDERS API
+      - path: /orders
+        pathType: Prefix
         backend:
           service:
             name: store-orders
             port:
               number: 8080
               
-      # 4. CHECKOUT
-      - path: /checkout(?:/|$)(.*)
-        pathType: ImplementationSpecific
+      # 5. CHECKOUT API
+      - path: /checkout
+        pathType: Prefix
         backend:
           service:
             name: checkout
-            port:
-              number: 8080
-              
-      # 5. UI/SPA FALLBACK FIX: Uses /()(.*) to ensure $2 captures the UI path intact.
-      - path: /()(.*)
-        pathType: ImplementationSpecific
-        backend:
-          service:
-            name: store-ui-retail-store-sample-ui-chart
             port:
               number: 8080

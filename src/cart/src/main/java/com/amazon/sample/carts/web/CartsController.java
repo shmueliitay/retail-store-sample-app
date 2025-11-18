@@ -42,7 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Tag(name = "carts")
-//@RequestMapping(path = "/carts")
+@RequestMapping(path = "/carts")
 @Slf4j
 public class CartsController {
 
