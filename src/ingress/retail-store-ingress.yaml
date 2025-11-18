@@ -5,8 +5,9 @@ metadata:
   namespace: retail-store
   annotations:
     kubernetes.io/ingress.class: nginx
-    # Use standard NGINX path stripping: /path is stripped to /
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    # Aggressive rewrite for APIs
+    nginx.ingress.kubernetes.io/rewrite-target: /$2 
 spec:
   ingressClassName: nginx
   rules:
@@ -14,47 +15,45 @@ spec:
     http:
       paths:
       
-      # 1. UI FALLBACK: Matches everything else and sends to UI
-      - path: /
+      # 1. CSS/JS Assets (CRITICAL FIX): Matches /css and /js and sends them directly to the UI.
+      - path: /css
         pathType: Prefix
         backend:
           service:
             name: store-ui-retail-store-sample-ui-chart
             port:
               number: 8080
-
-      # 2. CATALOG API: Matches /catalog or /catalog/ and strips /catalog
-      - path: /catalog
+      - path: /js
         pathType: Prefix
+        backend:
+          service:
+            name: store-ui-retail-store-sample-ui-chart
+            port:
+              number: 8080
+      
+      # 2. CATALOG API: Aggressive rewrite for APIs.
+      - path: /catalog/?(.*) 
+        pathType: ImplementationSpecific
         backend:
           service:
             name: store-catalog
             port:
               number: 8080
               
-      # 3. CART API: Matches /cart or /cart/ and strips /cart
-      - path: /cart
-        pathType: Prefix
+      # 3. CART API: Aggressive rewrite for APIs.
+      - path: /cart/?(.*)
+        pathType: ImplementationSpecific
         backend:
           service:
             name: store-cart-retail-store-cart
             port:
               number: 8080
               
-      # 4. ORDERS API
-      - path: /orders
+      # 4. UI/FALLBACK: Catches the root (/) and forwards.
+      - path: /
         pathType: Prefix
         backend:
           service:
-            name: store-orders
-            port:
-              number: 8080
-              
-      # 5. CHECKOUT API
-      - path: /checkout
-        pathType: Prefix
-        backend:
-          service:
-            name: checkout
+            name: store-ui-retail-store-sample-ui-chart
             port:
               number: 8080
