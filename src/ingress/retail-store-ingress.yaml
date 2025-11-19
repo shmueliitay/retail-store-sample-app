@@ -5,17 +5,21 @@ metadata:
   namespace: retail-store
   annotations:
     kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/use-regex: "true"
-    # Aggressive rewrite for APIs
-    nginx.ingress.kubernetes.io/rewrite-target: /$2 
+    # NO rewrite annotations are present here
 spec:
   ingressClassName: nginx
   rules:
   - host: retail-store.local
     http:
       paths:
-      
-      # 1. CSS/JS Assets (CRITICAL FIX): Matches /css and /js and sends them directly to the UI.
+      - path: /images
+        pathType: Prefix
+        backend:
+          service:
+            name: store-ui-retail-store-sample-ui-chart
+            port:
+              number: 8080
+
       - path: /css
         pathType: Prefix
         backend:
@@ -23,6 +27,7 @@ spec:
             name: store-ui-retail-store-sample-ui-chart
             port:
               number: 8080
+
       - path: /js
         pathType: Prefix
         backend:
@@ -30,26 +35,6 @@ spec:
             name: store-ui-retail-store-sample-ui-chart
             port:
               number: 8080
-      
-      # 2. CATALOG API: Aggressive rewrite for APIs.
-      - path: /catalog/?(.*) 
-        pathType: ImplementationSpecific
-        backend:
-          service:
-            name: store-catalog
-            port:
-              number: 8080
-              
-      # 3. CART API: Aggressive rewrite for APIs.
-      - path: /cart/?(.*)
-        pathType: ImplementationSpecific
-        backend:
-          service:
-            name: store-cart-retail-store-cart
-            port:
-              number: 8080
-              
-      # 4. UI/FALLBACK: Catches the root (/) and forwards.
       - path: /
         pathType: Prefix
         backend:
