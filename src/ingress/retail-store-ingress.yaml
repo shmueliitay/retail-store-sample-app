@@ -5,36 +5,12 @@ metadata:
   namespace: retail-store
   annotations:
     kubernetes.io/ingress.class: nginx
-    # NO rewrite annotations are present here
 spec:
   ingressClassName: nginx
   rules:
   - host: retail-store.local
     http:
       paths:
-      - path: /images
-        pathType: Prefix
-        backend:
-          service:
-            name: store-ui-retail-store-sample-ui-chart
-            port:
-              number: 8080
-
-      - path: /css
-        pathType: Prefix
-        backend:
-          service:
-            name: store-ui-retail-store-sample-ui-chart
-            port:
-              number: 8080
-
-      - path: /js
-        pathType: Prefix
-        backend:
-          service:
-            name: store-ui-retail-store-sample-ui-chart
-            port:
-              number: 8080
       - path: /
         pathType: Prefix
         backend:
