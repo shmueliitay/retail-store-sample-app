@@ -74,3 +74,6 @@ metrics:
 configMap:
   create: false
 
+imagePullSecrets:
+  - name: ecr-registry
+
