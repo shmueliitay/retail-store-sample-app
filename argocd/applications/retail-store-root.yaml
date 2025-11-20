@@ -1,18 +1,23 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: store-chckout
+  name: retail-store-root
   namespace: argocd
 spec:
-  project: default
+  project: retail-store-project
   source:
     repoURL: 'https://github.com/shmueliitay/retail-store-sample-app.git'
-    targetRevision: main
-    path: store-chckout/deploy
+    targetRevision: HEAD
+    path: argocd/applications
+    directory:
+      recurse: true
   destination:
     server: https://kubernetes.default.svc
-    namespace: store
+    namespace: retail-store
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+
