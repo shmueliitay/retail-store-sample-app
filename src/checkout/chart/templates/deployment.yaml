@@ -20,10 +20,10 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       serviceAccountName: {{ include "checkout.serviceAccountName" . }}
+      {{- if .Values.image.pullSecrets }}
       imagePullSecrets:
-        {{- range .Values.image.pullSecrets }}
-        - name: {{ .name }}
-        {{- end }}
+        {{- toYaml .Values.image.pullSecrets | nindent 8 }}
+      {{- end }}
       containers:
         - name: checkout
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

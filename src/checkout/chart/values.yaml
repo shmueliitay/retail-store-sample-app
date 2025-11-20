@@ -69,3 +69,6 @@ redis:
 configMap:
   create: false
   name: ""
+
+imagePullSecrets:
+  - name: ecr-registry
