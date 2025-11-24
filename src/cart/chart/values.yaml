@@ -21,6 +21,10 @@ resources:
     memory: 1Gi
 
 env:
+  - name: REDIS_HOST
+    value: "retail-redis-master"
+  - name: REDIS_PORT
+    value: "6379"
   - name: DYNAMODB_ENDPOINT
     value: "http://dynamodb-local:8000"
 
