@@ -36,3 +36,7 @@ devenv.local.nix
 /terraform/eks/default/.terraform.lock.hcl
 /terraform/eks/default/.terraform.tfstate
 /terraform/eks/default/.terraform.tfstate.backup
+#zip
+*.zip
+
+
